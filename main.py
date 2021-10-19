@@ -3,49 +3,50 @@
 # Update date: 10/21/2021
 
 from Owari import Owari
+from time import perf_counter
 
 
 # Decide who is going first
-def get_first_move():
+def get_first_move(ow):
     while True:
         first_move = input(
             "Do you want to move first? (Enter: Yes/No, y/n) \n")
 
         if first_move.lower() == "yes" or first_move.lower() == "y":
-            print("North moves first!")
-            return "north"
+            print("\nNorth moves first!")
+            break
         elif first_move.lower() == "no" or first_move.lower() == "n":
-            print("South moves first!")
-            return "south"
+            print("\nSouth moves first!")
+            ow.set_turn()
+            break
 
 
 def main():
     # Test
     ow = Owari()
 
-    turn = get_first_move()
+    get_first_move(ow)
 
-    print("\n~~~~~~~~~Game started!~~~~~~~~~")
+    print("\n~~~~~~Game started~~~~~~")
     ow.display_board()
 
     while True:
-        ow.get_human_move(turn)
+        ow.get_human_move()
         ow.display_board()
-        if ow.game_over(turn):
+
+        if ow.game_over():
             print("\nGame Over!!!")
             break
 
-        if turn == "north":
-            turn = "south"
-        else:
-            turn = "north"
+        ow.set_turn()
+
 
     ow.display_board()
 
     if ow.board[6] > ow.board[13]:
-        print("South won!")
+        print("\nSouth won!")
     else:
-        print("North won!")
+        print("\nNorth won!")
 
 
 if __name__ == "__main__":

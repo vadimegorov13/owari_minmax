@@ -1,9 +1,9 @@
 # Saves the state of the game
 
-# state = Owari()
-# heuristic = heuristic value of the satte
+# state = Owari() board and turn
+# heuristic = heuristic value of the state
 # children = array of chidrens of this state
-# move = shows which pit was moved on to get to that state
+# move = shows which pit was moved to get to that state
 
 class Node:
     def __init__(self, state):

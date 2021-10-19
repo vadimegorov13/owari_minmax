@@ -10,35 +10,37 @@ OPPOSITE = {0: 12, 1: 11, 2: 10, 3: 9, 4: 8, 5: 7,
 
 class Owari:
     # Constructor
-    def __init__(self, board=DEF_BOARD):
+    def __init__(self, board=DEF_BOARD, turn="north"):
         self.board = board
+        self.turn = turn
+
+    # Switch turn using self.turn variable
+    def set_turn(self):
+        if self.turn == "north":
+            self.turn = "south"
+        else:
+            self.turn = "north"
 
     # Get index of a pit from human and move
-    def get_human_move(self, turn):
+    def get_human_move(self):
         while True:
-            if turn == "north":
-                pit = input(
-                    "\nSpecify the pit from which you want to move stones (7, 8, 9, 10, 11, or 12) \n")
+            if self.turn == "north":
+                curr_pits = NORTH["pits"]
+            else:
+                curr_pits = SOUTH["pits"]
 
-                pit = int(pit)
+            pit = input(
+                f"\nSpecify the pit from which you want to move stones {curr_pits}\n")
 
-                if self.move_is_legal(pit) and 7 <= pit <= 12:
-                    print("You moved stones from pit ", pit)
-                    self.move(pit)
-                    return
+            pit = int(pit)
 
-            elif turn == "south":
-                pit = input(
-                    "\nSpecify the pit from which you want to move stones (0, 1, 2, 3, 4, or 5) \n")
-
-                pit = int(pit)
-
-                if self.move_is_legal(pit) and 0 <= pit <= 5:
-                    print("You moved stones from pit ", pit)
-                    self.move(pit)
-                    return
+            if self.move_is_legal(pit) and curr_pits[0] <= pit <= curr_pits[5]:
+                self.move(pit)
+                print("\nYou moved stones from pit ", pit)
+                break
 
     # Check if pit is not empty
+    # Move is legal (index of the pit): int => Boolean
     def move_is_legal(self, pit):
         if self.board[pit] == 0:
             print("You don't have stones in this pit, please choose another one")
@@ -47,17 +49,14 @@ class Owari:
         return True
 
     # Moves stones from the chosen pit
-    # Make a move (index of the pit) => ()
+    # Make a move (index of the pit): int => ()
     def move(self, pit):
-        curr_player = None
-        curr_opponent = None
-
-        if pit in SOUTH["pits"]:
-            curr_player = SOUTH
-            curr_opponent = NORTH
-        else:
+        if self.turn == "north":
             curr_player = NORTH
             curr_opponent = SOUTH
+        else:
+            curr_player = SOUTH
+            curr_opponent = NORTH
 
         # Take stones from the pit
         stones = self.board[pit]
@@ -78,14 +77,50 @@ class Owari:
                     self.capture(pit, curr_player["goal"])
 
     # Capture opponents stones
-    # Capture (index of the pit, index of the goal) => ()
+    # Capture (index of the pit, index of the goal): int, int => ()
     def capture(self, pit, goal):
-        # Take stones from opponent
-        stones = self.board[OPPOSITE[pit]]
+        # Add stones to curr_player goal
+        self.board[goal] += self.board[OPPOSITE[pit]]
+        # Empty the pit
         self.board[OPPOSITE[pit]] = 0
 
-        # Add stones to curr_player goal
-        self.board[goal] += stones
+    # This function should be run after player made a move!
+    # Checks if game is over
+    # Game Over () => Boolean
+
+    def game_over(self):
+        player_empty = True
+        opponent_empty = True
+
+        if self.turn == "north":
+            curr_player = NORTH
+            curr_opponent = SOUTH
+        else:
+            curr_player = SOUTH
+            curr_opponent = NORTH
+
+        for i in range(curr_player["pits"][0], curr_player["pits"][5]+1):
+            if self.board[i] != 0:
+                player_empty = False
+
+        for i in range(curr_opponent["pits"][0], curr_opponent["pits"][5]+1):
+            if self.board[i] != 0:
+                opponent_empty = False
+
+        if player_empty:
+            not_empty = curr_opponent
+        elif opponent_empty:
+            not_empty = curr_player
+        else:
+            return False
+
+        for i in range(not_empty["pits"][0], not_empty["pits"][5]+1):
+            # Add stones to the goal
+            self.board[not_empty["goal"]] += self.board[i]
+            # Empty the pit
+            self.board[i] = 0
+
+        return True
 
     # Display board
     def display_board(self):
@@ -105,31 +140,3 @@ class Owari:
 
         # end with new blank line
         print('')
-
-    # This function should be run after player made a move!
-    # Checks if game is over
-    # Game Over (North or South) => Boolean
-    def game_over(self, curr_turn):
-        curr_player = None
-        curr_opponent = None
-
-        if curr_turn == "north":
-            curr_player = NORTH
-            curr_opponent = SOUTH
-        else:
-            curr_player = SOUTH
-            curr_opponent = NORTH
-
-        for i in range(curr_player["pits"][0], curr_player["pits"][5]+1):
-            if self.board[i] != 0:
-                return False
-
-        for i in range(curr_opponent["pits"][0], curr_opponent["pits"][5]+1):
-            # Take stones from the pit
-            stones = self.board[i]
-            self.board[i] = 0
-
-            # Add stones to the goal
-            self.board[curr_opponent["goal"]] += stones
-
-        return True

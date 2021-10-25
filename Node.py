@@ -12,9 +12,6 @@ class Node:
         self.children = []
         self.move = -1
 
-    def set_num(self, num):
-        self.num = num
-
     def set_heuristic(self, heuristic):
         self.heuristic = heuristic
 
@@ -23,5 +20,3 @@ class Node:
 
     def set_move(self, move):
         self.move = move
-
-    

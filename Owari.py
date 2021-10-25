@@ -10,9 +10,9 @@ OPPOSITE = {0: 12, 1: 11, 2: 10, 3: 9, 4: 8, 5: 7,
 
 class Owari:
     # Constructor
-    def __init__(self, board=DEF_BOARD, turn="north"):
-        self.board = board
-        self.turn = turn
+    def __init__(self):
+        self.board = DEF_BOARD
+        self.turn = "north"
 
     # Switch turn using self.turn variable
     def set_turn(self):
@@ -38,12 +38,13 @@ class Owari:
                 self.move(pit)
                 print("\nYou moved stones from pit ", pit)
                 break
+            else:
+                print("You don't have stones in this pit, please choose another one")
 
     # Check if pit is not empty
     # Move is legal (index of the pit): int => Boolean
     def move_is_legal(self, pit):
         if self.board[pit] == 0:
-            print("You don't have stones in this pit, please choose another one")
             return False
 
         return True
@@ -138,5 +139,4 @@ class Owari:
         for i in range(7, 13):
             print(self.board[i], end="  ")
 
-        # end with new blank line
-        print('')
+        print()

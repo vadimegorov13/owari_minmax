@@ -30,7 +30,9 @@ class MMABP():
 
                 # Check if we can capture
                 if board[pit] == 1 and pit in curr_player["pits"]:
-                    self.capture(pit, curr_player["goal"])
+                    board = self.capture(pit, curr_player["goal"])
+
+        return board
 
     # Capture opponents stones
     # Capture (board, index of the pit, index of the goal): arr, int, int => ()
@@ -39,6 +41,8 @@ class MMABP():
         board[goal] += board[OPPOSITE[pit]]
         # Empty the pit
         board[OPPOSITE[pit]] = 0
+
+        return board
 
 
     # Check if pit is not empty
@@ -129,7 +133,7 @@ class MMABP():
         best_move = -1
 
         for move in self.get_moves(board, turn):
-            board = self.move()
+            board = self.move(board, turn, move)
             # ADD CODE HERE
 
         return best_move, best_heuristic

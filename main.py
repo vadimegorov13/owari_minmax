@@ -40,7 +40,7 @@ def play(ow):
             # Create agent
             agent = MMABP()
             # get the best move
-            pit = agent.get_computer_move(ow)
+            pit = agent.get_computer_move(ow.board, ow.turn)
             ow.move(pit)
             print("\nComputer moved stones from pit ", pit)
             ow.display_board()

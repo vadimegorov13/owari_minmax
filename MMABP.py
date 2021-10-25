@@ -1,71 +1,144 @@
 # Min max functions are going to be stored here
-from Node import Node
 from copy import deepcopy
+from Owari import NORTH, SOUTH, OPPOSITE
 
 
 class MMABP():
-    def get_heuristic(self, node):
-        # need more stuff i think, idk, yeah
-        computer_goal = node.state.board[6]
-        human_goal = node.state.board[13]
+    # Moves stones from the chosen pit
+    # Make a move (board, turn, index of the pit): arr, string, int => ()
+    def move(self, board, turn, pit):
+        if turn == "north":
+            curr_player = NORTH
+            curr_opponent = SOUTH
+        else:
+            curr_player = SOUTH
+            curr_opponent = NORTH
+
+        # Take stones from the pit
+        stones = board[pit]
+        board[pit] = 0
+
+        for _ in range(stones):
+            # Check if we are on 13th pit then change pit to 0
+            if pit == 13:
+                pit = 0
+            else:
+                pit += 1
+
+            if pit != curr_opponent["goal"]:
+                board[pit] += 1
+
+                # Check if we can capture
+                if board[pit] == 1 and pit in curr_player["pits"]:
+                    self.capture(pit, curr_player["goal"])
+
+    # Capture opponents stones
+    # Capture (board, index of the pit, index of the goal): arr, int, int => ()
+    def capture(self, board, pit, goal):
+        # Add stones to curr_player goal
+        board[goal] += board[OPPOSITE[pit]]
+        # Empty the pit
+        board[OPPOSITE[pit]] = 0
+
+
+    # Check if pit is not empty
+    # Move is legal (board, index of the pit): int => Boolean
+    def move_is_legal(self, board, pit):
+        if board[pit] == 0:
+            return False
+
+        return True
+
+
+    # Check if game is over
+    def game_over(self, board):
+        north_empty = True
+        south_empty = True
+
+        for i in range(NORTH["pits"][0], NORTH["pits"][5]+1):
+            if board[i] != 0:
+                north_empty = False
+
+        for i in range(SOUTH["pits"][0], SOUTH["pits"][5]+1):
+            if board[i] != 0:
+                south_empty = False
+
+        if north_empty or south_empty:
+            return True
+
+        return False
+
+
+    # Get final score of the game
+    def final_score(self, board):
+        human_goal = 0
+        computer_goal = 0
+
+        for i in range(NORTH["pits"][0], NORTH["pits"][5]+1):
+            # Add stones to the goal
+            human_goal += board[i]
+        for i in range(SOUTH["pits"][0], SOUTH["pits"][5]+1):
+            # Add stones to the goal
+            computer_goal += board[i]
 
         return computer_goal - human_goal
 
-    def get_child(self, node):
-        # It will get a legal move and than see if theres more legal moves left for the current states
-        child = "child"
-        has_more_children = True
 
-        # add some code here
+    # Get heuristic of the move
+    def get_heuristic(self, board):
+        human_goal = board[6]
+        computer_goal = board[13]
 
-        return child, has_more_children
+        heuristic = computer_goal - human_goal
 
-    # do_min and do_max will run recursively
-    def do_min(self, node, alpha, beta, depth):
-        # if the game is over on the last child it checks get's a heuristic for the child
-        if node.state.game_over():
-            node.set_heuristic(self.get_heuristic(node))
-            return node
+        return heuristic
 
-        # same as above but when it hits the max depth
+
+    # Get all legal moves for the current state
+    def get_moves(self, board, turn):
+        # Init move list
+        move_list = []
+
+        # Check which side should move
+        if turn == "north":
+            side = NORTH
+        else:
+            side = SOUTH
+
+        # Iterate through each playable pit
+        for i in side["pits"]:
+            # Check if move is legal
+            if self.move_is_legal(board, i) and side["pits"][0] <= i <= side["pits"][5]:
+                # Append current move to the list
+                move_list.append(i)
+
+        return move_list
+
+    def do_min(self, board, turn, alpha, beta, depth):
+        pass
+
+    # returns best_move and best_heuristic
+    def do_max(self, board, turn, alpha, beta, depth):
         if depth == 0:
-            node.set_heuristic(self.get_heuristic(node))
-            return node
+            return self.get_heuristic(board), -1
 
-        # create a new node that will have the best result and then return it
-        best_node = deepcopy(node)
-        # assign +infinity to the heuristic of the best node
-        best_node.set_heuristic(float('inf'))
+        if self.game_over(board):
+            return self.final_score(board), -1
 
-        # add some cool stuff here
+        best_heuristic = -float('inf')
+        best_move = -1
 
-        # return best node with the best heuristic
-        return best_node
+        for move in self.get_moves(board, turn):
+            board = self.move()
+            # ADD CODE HERE
 
-    def do_max(self, node, alpha, beta, depth):
-        # if the game is over on the last child it checks get's a heuristic for the child
-        if node.state.game_over():
-            node.set_heuristic(self.get_heuristic(node))
-            return node
+        return best_move, best_heuristic
 
-        # same as above but when it hits the max depth
-        if depth == 0:
-            node.set_heuristic(self.get_heuristic(node))
-            return node
-
-        # create a new node that will have the best result and then return it
-        best_node = deepcopy(node)
-        # assign -infinity to the heuristic of the best node
-        best_node.set_heuristic(-float('inf'))
-
-        # add some cool stuff here
-
-        # return best node with the best heuristic
-        return best_node
-
-    def get_computer_move(self, ow):
+    # This function will be called from main()
+    # get_computer_move(ow.board, ow.turn) => (best_move)
+    def get_computer_move(self, board, turn):
 
         # parse a new node, -infinity alpha, +infinity beta and depth
-        best_node = self.do_max(Node(ow), -float('inf'), float('inf'), 7)
+        best_move, best_heuristic = self.do_max(board, turn, -float('inf'), float('inf'), 11)
 
-        return best_node.move
+        return best_move

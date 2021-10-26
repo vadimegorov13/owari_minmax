@@ -41,7 +41,7 @@ class Owari:
 
             pit = int(pit)
 
-            if self.move_is_legal(pit) and curr_pits[0] <= pit <= curr_pits[5]:
+            if self.move_is_legal(pit) and curr_pits[0] <= pit <= curr_pits[5] and pit != 6 and pit != 13:
                 self.move(pit)
                 print("\nYou moved stones from pit ", pit)
                 break

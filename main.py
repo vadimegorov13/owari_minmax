@@ -4,6 +4,7 @@
 
 from Owari import Owari
 from MMABP import MMABP
+from copy import deepcopy
 
 
 # Decide who is going first
@@ -40,7 +41,9 @@ def play(ow):
             # Create agent
             agent = MMABP()
             # get the best move
-            pit = agent.get_computer_move(ow.board, ow.turn)
+            board = deepcopy(ow.board)
+            turn = ow.turn
+            pit = agent.get_computer_move(board, turn)
             ow.move(pit)
             print("\nComputer moved stones from pit ", pit)
             ow.display_board()

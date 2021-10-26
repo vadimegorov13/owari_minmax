@@ -17,6 +17,7 @@ class MMABP():
         # Take stones from the pit
         stones = board[pit]
         board[pit] = 0
+        moving_stones = stones
 
         for _ in range(stones):
             # Check if we are on 13th pit then change pit to 0
@@ -27,9 +28,10 @@ class MMABP():
 
             if pit != curr_opponent["goal"]:
                 board[pit] += 1
+                moving_stones -= 1
 
                 # Check if we can capture
-                if board[pit] == 1 and pit in curr_player["pits"]:
+                if board[pit] == 1 and pit in curr_player["pits"] and moving_stones == 0:
                     board = self.capture(board, pit, curr_player["goal"])
 
         return board
@@ -79,7 +81,6 @@ class MMABP():
         return computer_goal - human_goal
 
     # Get heuristic of the move
-
     def get_heuristic(self, board):
         computer_goal = board[6]
         human_goal = board[13]
@@ -90,7 +91,6 @@ class MMABP():
 
     # Check if pit is not empty
     # Move is legal (board, index of the pit): int => Boolean
-
     def move_is_legal(self, board, pit):
         if board[pit] == 0:
             return False
@@ -111,83 +111,71 @@ class MMABP():
         # Iterate through each playable pit
         for i in side["pits"]:
             # Check if move is legal
-            if self.move_is_legal(board, i) and side["pits"][0] <= i <= side["pits"][5]:
+            new_board = deepcopy(board)
+            if self.move_is_legal(new_board, i) and side["pits"][0] <= i <= side["pits"][5]:
                 # Append current move to the list
                 move_list.append(i)
 
         return move_list
 
-    def do_min(self, board, turn, alpha, beta, depth):
-        if depth == 0:
-            return -1, self.get_heuristic(board)
 
-        if self.game_over(board):
-            return -1, self.final_score(board)
-
-        best_heuristic = float('inf')
+    def minimax(self, board, turn, alpha, beta, depth):
+        best_heuristic = 0
         best_move = -1
 
-        for move in self.get_moves(board, turn):
-            updated_board = self.move(board, turn, move)
-            # ADD CODE HERE
-            _, heuristic = self.do_max(
-                updated_board, "south", alpha, beta, depth-1)
-
-            print(f"got from do_max: {heuristic}")
-
-            if heuristic < best_heuristic:
-                best_heuristic = heuristic
-                best_move = move
-
-            beta = min(beta, best_heuristic)
-
-            if beta <= alpha:
-                print("alpha is more than heuristic")
-
-                return best_move, best_heuristic
-
-        print(
-            f"min | depth = {depth}, alpha = {alpha}, beta = {beta}, h = {best_heuristic}, m = {best_move}")
-
-        return best_move, best_heuristic
-
-    # returns best_move and best_heuristic
-    def do_max(self, board, turn, alpha, beta, depth):
         if depth == 0:
-            return -1, self.get_heuristic(board)
+            best_heuristic = self.get_heuristic(board)
+            return best_move, best_heuristic
 
-        if self.game_over(board):
-            return -1, self.final_score(board)
+        elif self.game_over(board):
+            best_heuristic = self.final_score(board)
+            return best_move, best_heuristic
 
-        best_heuristic = -float('inf')
-        best_move = -1
+        elif turn == "south":
+            best_heuristic = -float('inf')
+            for move in self.get_moves(deepcopy(board), turn):
+                updated_board = self.move(deepcopy(board), turn, move)
 
-        for move in self.get_moves(board, turn):
-            updated_board = self.move(board, turn, move)
-            # ADD CODE HERE
-            _, heuristic = self.do_min(
-                updated_board, "north", alpha, beta, depth-1)
-            print(f"got from do_min: {heuristic}")
+                _, heuristic = self.minimax(
+                    deepcopy(updated_board), "north", alpha, beta, depth-1)
 
-            if heuristic > best_heuristic:
-                best_heuristic = heuristic
-                best_move = move
+                if heuristic > best_heuristic:
+                    best_heuristic = heuristic
+                    best_move = move
 
-            alpha = max(alpha, best_heuristic)
+                alpha = max(alpha, best_heuristic)
 
-            if beta <= alpha:
-                return best_move, best_heuristic
+                # prune
+                if best_heuristic >= beta:
+                    break
+        else:
+            best_heuristic = float('inf')
+            for move in self.get_moves(deepcopy(board), turn):
+                updated_board = self.move(deepcopy(board), turn, move)
 
-        print(
-            f"max | depth = {depth}, alpha = {alpha}, beta = {beta}, h = {best_heuristic}, m = {best_move}")
+                _, heuristic = self.minimax(
+                    deepcopy(updated_board), "south", alpha, beta, depth-1)
 
+                if heuristic < best_heuristic:
+                    best_heuristic = heuristic
+                    best_move = move
+
+                beta = min(beta, best_heuristic)
+
+                # prune dat shit
+                if best_heuristic <= alpha:
+                    break
+
+        # Return best move and heuristic of the current state
         return best_move, best_heuristic
 
     # This function will be called from main()
-    # get_computer_move(ow.board, ow.turn) => (best_move)
+    # get_computer_move(board: int array, turn: string) => best_move: int
     def get_computer_move(self, board, turn):
 
-        best_move, _ = self.do_max(
-            board, turn, -float('inf'), float('inf'), 101)
+        best_move, _ = self.minimax(
+            board, turn, -float('inf'), float('inf'), 10)
+
+        # print(f"heuristic of the move: {heuristic}")
 
         return best_move

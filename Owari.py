@@ -1,9 +1,16 @@
+# Default board that gets initialized at the start of the game
 DEF_BOARD = [3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 0]
+
 # Dictionary of South player
+#   - Contains a list of all possible moves and goal for SOUTH
 SOUTH = {"pits": [0, 1, 2, 3, 4, 5], "goal": 6}
+
 # Dictionary of North player
+#   - Contains a list of all possible moves and goal for NORTH
 NORTH = {"pits": [7, 8, 9, 10, 11, 12], "goal": 13}
+
 # Dictionary of opposite pits
+#   - Contains a list of all possible moves
 OPPOSITE = {0: 12, 1: 11, 2: 10, 3: 9, 4: 8, 5: 7,
             12: 0, 11: 1, 10: 2, 9: 3, 8: 4, 7: 5}
 
@@ -11,8 +18,8 @@ OPPOSITE = {0: 12, 1: 11, 2: 10, 3: 9, 4: 8, 5: 7,
 class Owari:
     # Constructor
     def __init__(self):
-        self.board = DEF_BOARD
-        self.turn = "north"
+        self.board = DEF_BOARD  # Assign defaul board
+        self.turn = "north"     # Assign side of the first move
 
     # Switch turn using self.turn variable
     def set_turn(self):
@@ -62,6 +69,7 @@ class Owari:
         # Take stones from the pit
         stones = self.board[pit]
         self.board[pit] = 0
+        moving_stones = stones
 
         for _ in range(stones):
             # Check if we are on 13th pit then change pit to 0
@@ -72,9 +80,10 @@ class Owari:
 
             if pit != curr_opponent["goal"]:
                 self.board[pit] += 1
+                moving_stones -= 1
 
                 # Check if we can capture
-                if self.board[pit] == 1 and pit in curr_player["pits"]:
+                if self.board[pit] == 1 and pit in curr_player["pits"] and moving_stones == 0:
                     self.capture(pit, curr_player["goal"])
 
     # Capture opponents stones
@@ -126,17 +135,18 @@ class Owari:
     # Display board
     def display_board(self):
 
-        # South pits
-        print("\n    ", end='')
-        for i in range(5, -1, -1):
+        # North pits
+        print("    ", end="")
+        for i in range(12, 6, -1):
             print(self.board[i], end="  ")
 
         # Goals
-        print("\n", self.board[6], "                  ", self.board[13])
+        print("\n", self.board[13], "                  ", self.board[6])
 
-        # North pits
-        print("    ", end='')
-        for i in range(7, 13):
+        # South pits
+        print("\n    ", end="")
+        for i in range(0, 6, 1):
             print(self.board[i], end="  ")
 
-        print()
+        # end with new blank line
+        print("")

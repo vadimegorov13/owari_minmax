@@ -22,9 +22,8 @@ def get_first_move(ow):
             break
 
 # Play a game with computer
-
-
 def play(ow):
+    # Decide who is going first
     get_first_move(ow)
 
     print("\n~~~~~~Game started~~~~~~")
@@ -32,29 +31,28 @@ def play(ow):
 
     while True:
         if ow.turn == "north":
-            # get human move
+            # Make human move
             ow.get_human_move()
             ow.display_board()
-            # change turn
+            # Change turn
             ow.set_turn()
         else:
-            # Create agent
-            agent = MMABP()
-            # get the best move
-            board = deepcopy(ow.board)
-            turn = ow.turn
-            pit = agent.get_computer_move(board, turn)
+            # Get the best move
+            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn))
+            # Make a computer move
             ow.move(pit)
             print("\nComputer moved stones from pit ", pit)
             ow.display_board()
             # change turn
             ow.set_turn()
 
+        # Check if game is over
         if ow.game_over():
             print("\nGame Over!!!")
             ow.display_board()
             break
 
+    # Decide a winner
     if ow.board[6] == ow.board[13]:
         print("\n Tie!")
     elif ow.board[6] > ow.board[13]:
@@ -64,7 +62,7 @@ def play(ow):
 
 
 def main():
-    # Test
+    # Start a game
     play(Owari())
 
 

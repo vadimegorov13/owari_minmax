@@ -1,6 +1,7 @@
 # Min max functions are going to be stored here
 from copy import deepcopy
 from Owari import NORTH, SOUTH, OPPOSITE
+from time import perf_counter
 
 
 class MMABP():
@@ -81,13 +82,41 @@ class MMABP():
         return computer_goal - human_goal
 
     # Get heuristic of the move
-    def get_heuristic(self, board):
+    def get_heuristic(self, board, turn):
         computer_goal = board[6]
         human_goal = board[13]
+        capture_potential = self.create_capture(board, turn)
 
-        heuristic = computer_goal - human_goal
+        heuristic = computer_goal + capture_potential - human_goal
 
         return heuristic
+
+    # heuristic based on potential for one player to capture stones
+    def create_capture(self, board, turn):
+        target_pits = []
+        if turn == "north":
+            curr_pits = NORTH["pits"]
+            opp_pits = SOUTH["pits"]
+        else:
+            curr_pits = SOUTH["pits"]
+            opp_pits = NORTH["pits"]
+
+        for pits in opp_pits:
+            # Sets criteria for minimum number of stones in pit to target
+            if board[pits] > 2:
+                target_pits.append(pits)
+            # target_pits.sort(reversed)
+
+        for target in target_pits:
+            cap_space = OPPOSITE[target]
+            for canidates in curr_pits:
+                if board[canidates] > 0:
+                    if canidates - cap_space == (board[canidates] % 13):
+                        if turn == "north":
+                            return -board[target]
+                        else:
+                            return board[target]
+        return 0
 
     # Check if pit is not empty
     # Move is legal (board, index of the pit): int => Boolean
@@ -117,13 +146,12 @@ class MMABP():
                 move_list.append(i)
         return move_list
 
-
     def minimax(self, board, turn, alpha, beta, depth):
         best_heuristic = 0
         best_move = -1
 
         if depth == 0:
-            best_heuristic = self.get_heuristic(board)
+            best_heuristic = self.get_heuristic(board, turn)
             return best_move, best_heuristic
 
         elif self.game_over(board):
@@ -170,11 +198,16 @@ class MMABP():
 
     # This function will be called from main()
     # get_computer_move(board: int array, turn: string) => best_move: int
-    def get_computer_move(self, board, turn):
+    def get_computer_move(self, board, turn, depth):
 
-        best_move, _ = self.minimax(
-            board, turn, -float('inf'), float('inf'), 10)
+        start_t = perf_counter()
+        best_move, heuristic = self.minimax(
+            board, turn, -float('inf'), float('inf'), depth)
+        stop_t = perf_counter()
 
-        # print(f"heuristic of the move: {heuristic}")
+        # print(f"MMABP 2.0 moved stones from pit {best_move}")
+        print(f"Computer moved stones from pit {best_move}")
+        print(f"Heuristic of the move: {heuristic}")
+        print(f"Thinking time: {str(round(stop_t - start_t, 4))} seconds")
 
         return best_move

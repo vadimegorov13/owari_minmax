@@ -51,6 +51,7 @@ class Owari:
                 else:
                     print("\nYou don't have stones in this pit. Please choose another one\n")
 
+
     # Check if pit is not empty
     # Move is legal (index of the pit): int => Boolean
     def move_is_legal(self, pit):
@@ -148,7 +149,10 @@ class Owari:
         print("-"*40)
 
         # North bins
-        print(f" {self.board[13]} | ", end="")
+        if self.board[13] / 10 >= 1:
+            print(f"{self.board[13]} | ", end="")
+        else:
+            print(f" {self.board[13]} | ", end="")
         for i in range(12, 6, -1):
             print(f"  {self.board[i]}  ", end="")
 

@@ -22,26 +22,25 @@ def get_first_move(ow):
             break
 
 # Play a game with computer
-def computer_vs_computer(ow):
+def computer_vs_computer(ow, depth):
+    get_first_move(ow)
     print("\n              GAME STARTED")
     ow.display_board()
 
     while True:
         if ow.turn == "north":
             # Get the best move
-            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn))
+            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn), depth)
             # Make a computer move
             ow.move(pit)
-            print("Computer moved stones from pit ", pit)
             ow.display_board()
             # change turn
             ow.set_turn()
         else:
             # Get the best move
-            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn))
+            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn), depth)
             # Make a computer move
             ow.move(pit)
-            print("Computer moved stones from pit ", pit)
             ow.display_board()
             # change turn
             ow.set_turn()
@@ -61,7 +60,7 @@ def computer_vs_computer(ow):
         print("\nNorth won!")
 
 # Play a game with computer
-def human_vs_computer(ow):
+def human_vs_computer(ow, depth):
     # Decide who is going first
     get_first_move(ow)
 
@@ -77,10 +76,9 @@ def human_vs_computer(ow):
             ow.set_turn()
         else:
             # Get the best move
-            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn))
+            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn), depth)
             # Make a computer move
             ow.move(pit)
-            print("Computer moved stones from pit ", pit)
             ow.display_board()
             # change turn
             ow.set_turn()
@@ -133,8 +131,9 @@ def human_vs_human(ow):
 
 
 def main():
+    depth = 10
     # Start a game
-    human_vs_computer(Owari())
+    human_vs_computer(Owari(), depth)
 
 
 if __name__ == "__main__":

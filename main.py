@@ -22,11 +22,50 @@ def get_first_move(ow):
             break
 
 # Play a game with computer
-def play(ow):
+def computer_vs_computer(ow):
+    print("\n              GAME STARTED")
+    ow.display_board()
+
+    while True:
+        if ow.turn == "north":
+            # Get the best move
+            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn))
+            # Make a computer move
+            ow.move(pit)
+            print("Computer moved stones from pit ", pit)
+            ow.display_board()
+            # change turn
+            ow.set_turn()
+        else:
+            # Get the best move
+            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn))
+            # Make a computer move
+            ow.move(pit)
+            print("Computer moved stones from pit ", pit)
+            ow.display_board()
+            # change turn
+            ow.set_turn()
+
+        # Check if game is over
+        if ow.game_over():
+            print("\nGame Over!!!")
+            ow.display_board()
+            break
+
+    # Decide a winner
+    if ow.board[6] == ow.board[13]:
+        print("\n Tie!")
+    elif ow.board[6] > ow.board[13]:
+        print("\nSouth won!")
+    else:
+        print("\nNorth won!")
+
+# Play a game with computer
+def human_vs_computer(ow):
     # Decide who is going first
     get_first_move(ow)
 
-    print("\n~~~~~~Game started~~~~~~")
+    print("\n              GAME STARTED")
     ow.display_board()
 
     while True:
@@ -41,9 +80,41 @@ def play(ow):
             pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn))
             # Make a computer move
             ow.move(pit)
-            print("\nComputer moved stones from pit ", pit)
+            print("Computer moved stones from pit ", pit)
             ow.display_board()
             # change turn
+            ow.set_turn()
+
+        # Check if game is over
+        if ow.game_over():
+            print("\nGame Over!!!")
+            ow.display_board()
+            break
+
+    # Decide a winner
+    if ow.board[6] == ow.board[13]:
+        print("\n Tie!")
+    elif ow.board[6] > ow.board[13]:
+        print("\nSouth won!")
+    else:
+        print("\nNorth won!")
+
+def human_vs_human(ow):
+    print("\n              GAME STARTED")
+    ow.display_board()
+
+    while True:
+        if ow.turn == "north":
+            # Make human move
+            ow.get_human_move()
+            ow.display_board()
+            # Change turn
+            ow.set_turn()
+        else:
+            # Make human move
+            ow.get_human_move()
+            ow.display_board()
+            # Change turn
             ow.set_turn()
 
         # Check if game is over
@@ -63,7 +134,7 @@ def play(ow):
 
 def main():
     # Start a game
-    play(Owari())
+    human_vs_computer(Owari())
 
 
 if __name__ == "__main__":

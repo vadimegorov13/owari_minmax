@@ -112,10 +112,9 @@ class MMABP():
         for i in side["pits"]:
             # Check if move is legal
             new_board = deepcopy(board)
-            if self.move_is_legal(new_board, i) and side["pits"][0] <= i <= side["pits"][5]:
+            if self.move_is_legal(new_board, i):
                 # Append current move to the list
                 move_list.append(i)
-
         return move_list
 
 

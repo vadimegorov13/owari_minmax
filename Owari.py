@@ -36,17 +36,20 @@ class Owari:
             else:
                 curr_pits = SOUTH["pits"]
 
-            pit = input(
-                f"\nSpecify the pit from which you want to move stones {curr_pits}\n")
+            pit = input(f"Make your move {curr_pits}\n")
 
-            pit = int(pit)
-
-            if self.move_is_legal(pit) and curr_pits[0] <= pit <= curr_pits[5] and pit != 6 and pit != 13:
-                self.move(pit)
-                print("\nYou moved stones from pit ", pit)
-                break
+            if not pit.isdigit():
+                print("\nInvalid intput, please enter an integer\n")
             else:
-                print("You don't have stones in this pit, please choose another one")
+                pit = int(pit)
+
+                if curr_pits[0] <= pit <= curr_pits[5]:
+                    if self.move_is_legal(pit):
+                        self.move(pit)
+                        print(f"\nYou moved stones from pit {pit}")
+                        break
+                else:
+                    print("\nYou don't have stones in this pit. Please choose another one\n")
 
     # Check if pit is not empty
     # Move is legal (index of the pit): int => Boolean
@@ -97,7 +100,6 @@ class Owari:
     # This function should be run after player made a move!
     # Checks if game is over
     # Game Over () => Boolean
-
     def game_over(self):
         player_empty = True
         opponent_empty = True
@@ -134,19 +136,36 @@ class Owari:
 
     # Display board
     def display_board(self):
+        print("")
+        # North ruler
+        print("      ", end="")
+        for i in range(12, 9, -1):
+            print(f"{i}   ", end="")
+        print(" ", end="")
+        for i in range(9, 6, -1):
+            print(f"{i}    ", end="")
+        print("        NORTH")
+        print("-"*40)
 
-        # North pits
-        print("    ", end="")
+        # North bins
+        print(f" {self.board[13]} | ", end="")
         for i in range(12, 6, -1):
-            print(self.board[i], end="  ")
+            print(f"  {self.board[i]}  ", end="")
 
-        # Goals
-        print("\n", self.board[13], "                  ", self.board[6])
+        # Line
+        print(" |")
+        print("   |", "-"*30, "|")
+        print("   |", end=" ")
 
-        # South pits
-        print("\n    ", end="")
+        # South bins
         for i in range(0, 6, 1):
-            print(self.board[i], end="  ")
+            print(f"  {self.board[i]}  ", end="")
+        print(f" | {self.board[6]}")
 
-        # end with new blank line
+        # South ruler
+        print("-"*40)
+        print("       ", end="")
+        for i in range(0, 6, 1):
+            print(f"{i}    ", end="")
+        print("        SOUTH")
         print("")

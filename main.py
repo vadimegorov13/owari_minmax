@@ -22,44 +22,6 @@ def get_first_move(ow):
             break
 
 # Play a game with computer
-def computer_vs_computer(ow, depth):
-    get_first_move(ow)
-    print("\n              GAME STARTED")
-    ow.display_board()
-
-    while True:
-        if ow.turn == "north":
-            # Get the best move
-            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn), depth)
-            # Make a computer move
-            ow.move(pit)
-            ow.display_board()
-            # change turn
-            ow.set_turn()
-        else:
-            # Get the best move
-            pit = MMABP().get_computer_move(deepcopy(ow.board), deepcopy(ow.turn), depth)
-            # Make a computer move
-            ow.move(pit)
-            ow.display_board()
-            # change turn
-            ow.set_turn()
-
-        # Check if game is over
-        if ow.game_over():
-            print("\nGame Over!!!")
-            ow.display_board()
-            break
-
-    # Decide a winner
-    if ow.board[6] == ow.board[13]:
-        print("\n Tie!")
-    elif ow.board[6] > ow.board[13]:
-        print("\nSouth won!")
-    else:
-        print("\nNorth won!")
-
-# Play a game with computer
 def human_vs_computer(ow, depth):
     # Decide who is going first
     get_first_move(ow)
@@ -102,18 +64,11 @@ def human_vs_human(ow):
     ow.display_board()
 
     while True:
-        if ow.turn == "north":
-            # Make human move
-            ow.get_human_move()
-            ow.display_board()
-            # Change turn
-            ow.set_turn()
-        else:
-            # Make human move
-            ow.get_human_move()
-            ow.display_board()
-            # Change turn
-            ow.set_turn()
+        # Make human move
+        ow.get_human_move()
+        ow.display_board()
+        # Change turn
+        ow.set_turn()
 
         # Check if game is over
         if ow.game_over():

@@ -105,7 +105,7 @@ class MMABP():
             # Sets criteria for minimum number of stones in pit to target
             if board[pits] > 2:
                 target_pits.append(pits)
-            # target_pits.sort(reversed)
+            target_pits = target_pits[::-1]
 
         for target in target_pits:
             cap_space = OPPOSITE[target]

@@ -81,14 +81,15 @@ class Owari:
                 pit = 0
             else:
                 pit += 1
+                if pit == curr_opponent["goal"]:
+                    pit = curr_player["pits"][0]
 
-            if pit != curr_opponent["goal"]:
-                self.board[pit] += 1
-                moving_stones -= 1
+            self.board[pit] += 1
+            moving_stones -= 1
 
-                # Check if we can capture
-                if self.board[pit] == 1 and pit in curr_player["pits"] and moving_stones == 0:
-                    self.capture(pit, curr_player["goal"])
+            # Check if we can capture
+            if self.board[pit] == 1 and pit in curr_player["pits"] and moving_stones == 0:
+                self.capture(pit, curr_player["goal"])
 
     # Capture opponents stones
     # Capture (index of the pit, index of the goal): int, int => ()

@@ -60,6 +60,7 @@ def human_vs_computer(ow, depth):
         print("\nNorth won!")
 
 def human_vs_human(ow):
+    get_first_move(ow)
     print("\n              GAME STARTED")
     ow.display_board()
 
@@ -89,6 +90,7 @@ def main():
     depth = 10
     # Start a game
     human_vs_computer(Owari(), depth)
+    # human_vs_human(Owari())
 
 
 if __name__ == "__main__":
